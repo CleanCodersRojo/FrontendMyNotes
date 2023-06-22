@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/infrastructure/ui/notes/note_editor.dart';
+import 'package:flutter_application_1/infrastructure/ui/notes/listNotes.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite;
 import 'package:sqflite_common/sqlite_api.dart';
 
@@ -13,10 +14,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final note = Note(title: '', body: '');
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
-      home: NoteEditor(note, key: UniqueKey()), // Agregar el parámetro key
+      home: listNotes(), // Agregar el parámetro key
     );
   }
 }

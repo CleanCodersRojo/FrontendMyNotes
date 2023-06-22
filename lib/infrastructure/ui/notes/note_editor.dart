@@ -34,7 +34,9 @@ class _NoteEditorState extends State<NoteEditor> {
       //Begin AppBar
       appBar: AppBar(
         leading: IconButton(
-        onPressed: () {},
+        onPressed: () {
+          Navigator.pop(context);
+        },
         icon: Image.asset('lib/assets/icons/headline.png',
         width: 24,
         height: 24,
