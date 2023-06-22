@@ -100,6 +100,8 @@ class _NoteEditorState extends State<NoteEditor> {
                   },
                 ),
                 TextFormField(
+                  scrollPadding: const EdgeInsets.all(15),
+                  maxLines: null,
                   decoration: const InputDecoration(
                     hintText: "Empieza a escribir",
                     hintStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -162,7 +164,7 @@ bottomNavigationBar: BottomNavigationBar(
   icon: Row(
     children: [
       Padding(
-        padding: EdgeInsets.only(left:56,top: 17),
+        padding: EdgeInsets.only(left:90,top: 17),
         child:  Image.asset('lib/assets/icons/franjas_menu.png',
           width: 24,
           height: 24,
@@ -176,7 +178,7 @@ bottomNavigationBar: BottomNavigationBar(
         icon: Row(
           children: [
             Padding(
-              padding: EdgeInsets.only(left:56,top: 17),
+              padding: EdgeInsets.only(left:90,top: 17),
                child: Icon(
                  Icons.settings,
                  color: colorBackgroundBlue,
