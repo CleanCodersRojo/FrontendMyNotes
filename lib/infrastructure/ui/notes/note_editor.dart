@@ -98,6 +98,8 @@ class _NoteEditorState extends State<NoteEditor> {
                   },
                 ),
                 TextFormField(
+                  scrollPadding: const EdgeInsets.all(15),
+                  maxLines: null,
                   decoration: const InputDecoration(
                     hintText: "Empieza a escribir",
                     hintStyle: TextStyle(fontWeight: FontWeight.bold),
