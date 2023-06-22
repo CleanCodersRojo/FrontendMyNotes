@@ -22,7 +22,17 @@ class listNotes extends StatelessWidget {
             title,
           ),
         ),
-        body: Center(
+        body: Container(
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color.fromARGB(255, 255, 255, 255),
+                Color.fromARGB(255, 58, 176, 255),
+              ],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
           child: Column(
             children: [
               Container(
@@ -36,16 +46,19 @@ class listNotes extends StatelessWidget {
                         onPressed: () {},
                         label: const Text("Universidad"),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: Color.fromARGB(255, 248, 116, 116),
                       ),
                       ActionChip(
                         onPressed: () {},
                         label: const Text("Trabajo"),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: Color.fromARGB(255, 248, 116, 116),
                       ),
                       ActionChip(
                         onPressed: () {},
                         label: const Text("Hogar"),
                         materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        backgroundColor: Color.fromARGB(255, 248, 116, 116),
                       ),
                     ],
                   )),
@@ -77,6 +90,7 @@ class listNotes extends StatelessWidget {
                             horizontal: 16, vertical: 8.0),
                         decoration: BoxDecoration(
                             border: Border.all(color: const Color(0xFFE0E0E0)),
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(8.0)),
                         padding: const EdgeInsets.all(8),
                         child: Row(
