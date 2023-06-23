@@ -18,4 +18,4 @@ const colorBlack = Color(0xFF000B30);
 const colorWhite = Color(0xFFFFFFFF);
 const colorRed = Color(0xFFC5032B);
 const colorGreen = Color.fromARGB(255, 14, 186, 14);
-const colorGrey = Color(0xFF7b7c7c);
+const colorGrey = Color.fromARGB(255, 230, 230, 230);
