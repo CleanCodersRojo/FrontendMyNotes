@@ -46,10 +46,11 @@ flutter_icons:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  sqflite: ^2.2.2
+  sqflite: ^2.0.0+3
   sqflite_common_ffi: ^2.2.0+1
   sqlite3_flutter_libs: ^0.4.2 
   moor: ^4.3.0
+  fpdart: ^0.3.0
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
