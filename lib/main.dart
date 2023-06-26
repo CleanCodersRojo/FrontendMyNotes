@@ -1,23 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/infrastructure/ui/notes/note_editor.dart';
-import 'package:flutter_application_1/infrastructure/ui/notes/listNotes.dart';
-import 'package:sqflite_common_ffi/sqflite_ffi.dart' as sqflite;
-import 'package:sqflite_common/sqlite_api.dart';
+import 'package:flutter_application_1/infrastructure/ui/view/note_editor.dart';
+import 'package:flutter_application_1/infrastructure/ui/view/listNotes.dart';
 
-import 'domain/models/note.dart';
+
 void main() async {
-  sqflite.databaseFactory = sqflite.databaseFactoryFfi;
+  //sqflite.databaseFactory = sqflite.databaseFactoryFfi;
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final note = Note(title: '', body: '');
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Material App',
-      home: listNotes(), // Agregar el parámetro key
+      theme: ThemeData(        
+        primarySwatch: Colors.blue,
+      ),
+      home: MiApp(), // Agregar el parámetro key
+    );
+  }
+}
+
+class MiApp extends StatelessWidget {
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: "/",
+      routes: {
+        "/" : (context) => Listado(),
+        "/editar": (context) => NoteEditor()
+      }
     );
   }
 }
