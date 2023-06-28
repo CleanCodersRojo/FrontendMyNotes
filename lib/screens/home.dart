@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final url = 'http://192.168.0.106:3000/nota/findbyuserid/user1';
     final response = await http.get(Uri.parse(url));
     List<Note> notasList = [];
-    if (response.statusCode == 200) {
+    if (response.statusCode == 200 ) {
       final responseJson = jsonDecode(response.body);
       List<dynamic> notas = responseJson['value'];
 
@@ -36,6 +36,8 @@ class _HomeScreenState extends State<HomeScreen> {
       notas.forEach((nota) {
         DateTime fc = tramsformarfecha(nota['fechaCreacion']);
         DateTime fa = tramsformarfecha(nota['fechaActualizacion']);
+        var latitud = nota['latitud'];
+        print(latitud);
 
         notasList.add(Note(
             notaId: nota['notaId'],
@@ -168,7 +170,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.only(top: 30),
                         itemCount: filteredNotes.length,
                         itemBuilder: (context, index) {
-                          return Card(
+          
+              return Dismissible(key: Key(index.toString()),
+                direction: DismissDirection.startToEnd,
+                background: Container (
+                  color: Colors.red,
+                  padding: EdgeInsets.only(left: 5),
+                    child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Icon(Icons.delete, color: Colors.black)
+                )
+                ),
+              onDismissed: (direction) {
+                deleteNote (index);
+              },
+
+                          child: Card(
                             margin: EdgeInsets.only(bottom: 20),
                             color: getRandomColor(),
                             elevation: 3,
@@ -238,21 +255,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: Colors.grey.shade800),
                                   ),
                                 ),
-                                trailing: IconButton(
-                                  onPressed: () async {
-                                    final result =
-                                        await confirmationDialog(context);
-                                    if (result != null && result) {
-                                      deleteNote(index);
-                                    }
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                  ),
-                                ),
                               ),
                             ),
-                          );
+                          ),
+                        );
                         },
                       );
                     }
