@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/infrastructure/ui/adr_notes/listNotes.dart';
-import 'package:flutter_application_1/infrastructure/ui/adr_notes/saveNotes.dart';
+import 'package:note_app/screens/home.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  runApp(const MainApp());
+}
 
-class MyApp extends StatelessWidget{
+class MainApp extends StatelessWidget {
+  const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context){
-    return MaterialApp(
-       debugShowCheckedModeBanner: false,
-       title: 'Material App',
-       home: SaveNotes(),
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: HomeScreen(),
     );
   }
 }

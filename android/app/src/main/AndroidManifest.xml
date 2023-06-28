@@ -1,6 +1,7 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <application
-        android:label="app_my_notes"
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.note_app">
+   <application
+        android:label="note_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
