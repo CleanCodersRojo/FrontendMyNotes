@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/infrastructure/ui/view/note_editor.dart';
 import 'package:flutter_application_1/infrastructure/ui/view/listNotes.dart';
 
+import 'infrastructure/ui/view/speech.dart';
+
 
 void main() async {
   //sqflite.databaseFactory = sqflite.databaseFactoryFfi;
@@ -31,7 +33,8 @@ class MiApp extends StatelessWidget {
       initialRoute: "/",
       routes: {
         "/" : (context) => Listado(),
-        "/editar": (context) => NoteEditor()
+        "/editar": (context) => NoteEditor(),
+        "/speech": (context) => SpeechScreen()
       }
     );
   }
