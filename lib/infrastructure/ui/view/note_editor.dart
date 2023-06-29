@@ -40,36 +40,73 @@ class _NoteEditorState extends State<NoteEditor> {
       appBar: AppBar(
         backgroundColor: colorGrey,
         elevation: 0,
+        
+       
+          
+          
+          
+                leading: Row(
+                children:[
+                IconButton(padding: EdgeInsets.only(left: 15),
+                  onPressed: () {
+                   Navigator.pop(context);
+                  },
+                  icon: Image.asset('lib/assets/icons/headline.png',
+                    width: 24,
+                    height: 24,
+                  ),
+                  splashRadius: 20,
+                ),
+            
+                
+                ],
+                ),
+                actions:[
+                  IconButton(
+                   onPressed: () {
+                    
+                    if (_formKey.currentState!.validate()) {
+                      // Aquí se guardar los valores en algún lugar
+                      // como una base de datos o un archivo
+                            if (note.id! > 0) {
+                              note.title = titleController.text;
+                              note.body = bodyController.text;
+                              DBLocal.update(note);
+                              print('Título: $note.title');
+                              print('Cuerpo: $note.body');
+                              print('Nota guardada');
+                            }
+                            else
+                              DBLocal.insert(Note(title: titleController.text, body: bodyController.text));
+                            Navigator.pushNamed(context,"/");
+                          }
+                        },
+                  icon: Image.asset('lib/assets/icons/guardar.png',width: 39,
+                    height: 39,),
+                  // child: ,
+                ),
+                IconButton(
+                  onPressed: () {},
+                    icon: Image.asset('lib/assets/icons/bell.png',
+                    width: 24,
+                    height: 24,
+                  ),
+                  splashRadius: 5,
+                ),
 
-        leading: IconButton(
-         onPressed: () {
-           Navigator.pop(context);
-         },
-        icon: Image.asset('lib/assets/icons/headline.png',
-        width: 24,
-        height: 24,
-      ),
-      splashRadius: 20,
-    ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset('lib/assets/icons/bell.png',
-            width: 24,
-            height: 24,
-          ),
-          splashRadius: 5,
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Image.asset('lib/assets/icons/tag.png',
-            width: 24,
-            height: 24,
-          ),
-          splashRadius: 5,
-          ),
-        ],
-      ),
+                IconButton(
+                  onPressed: () {},
+                    icon: Image.asset('lib/assets/icons/tag.png',
+                    width: 24,
+                    height: 24,
+                ),
+                splashRadius: 5,
+                ),
+
+                ],
+        ),
+        
+      
 
 
 
@@ -135,27 +172,27 @@ class _NoteEditorState extends State<NoteEditor> {
                   },
                   
                 ),
-
-                ElevatedButton(
-                   onPressed: () {
-                    if (_formKey.currentState!.validate()) {
-                      // Aquí se guardar los valores en algún lugar
-                      // como una base de datos o un archivo
-                            if (note.id! > 0) {
-                              note.title = titleController.text;
-                              note.body = bodyController.text;
-                              DBLocal.update(note);
-                              print('Título: $note.title');
-                              print('Cuerpo: $note.body');
-                              print('Nota guardada');
-                            }
-                            else
-                              DBLocal.insert(Note(title: titleController.text, body: bodyController.text));
-                            Navigator.pushNamed(context,"/");
-                          }
-                        },
-                  child: Text('Guardar'),
-                ),
+              // ElevatedButton(
+              //      onPressed: () {
+              //       if (_formKey.currentState!.validate()) {
+              //         // Aquí se guardar los valores en algún lugar
+              //         // como una base de datos o un archivo
+              //               if (note.id! > 0) {
+              //                 note.title = titleController.text;
+              //                 note.body = bodyController.text;
+              //                 DBLocal.update(note);
+              //                 print('Título: $note.title');
+              //                 print('Cuerpo: $note.body');
+              //                 print('Nota guardada');
+              //               }
+              //               else
+              //                 DBLocal.insert(Note(title: titleController.text, body: bodyController.text));
+              //               Navigator.pushNamed(context,"/");
+              //             }
+              //           },
+              //     child: Text('Guardar'),
+              //   ),
+                
               ],
             ),
           ),
