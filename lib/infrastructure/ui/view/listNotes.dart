@@ -248,11 +248,12 @@ class Listado extends StatelessWidget {
 
             leading: IconButton(//icono de menú
               tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-              onPressed: () {},
+              onPressed: () {Navigator.pushNamed(context,"/speech");},
               icon: Image.asset('lib/assets/icons/menu_2.png',
               width: 40,
               height: 40,
               color: colorWhite,
+              
             ),
             splashRadius: 25,
         ),
