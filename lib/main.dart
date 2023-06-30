@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/infrastructure/ui/view/note_editor.dart';
 import 'package:flutter_application_1/infrastructure/ui/view/listNotes.dart';
 
+import 'infrastructure/ui/view/ocr.dart';
 import 'infrastructure/ui/view/speech.dart';
 
 
@@ -30,11 +31,12 @@ class MiApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: "/",
+      initialRoute: "/ocr",
       routes: {
         "/" : (context) => Listado(),
         "/editar": (context) => NoteEditor(),
-        "/speech": (context) => SpeechScreen()
+        "/speech": (context) => SpeechScreen(),
+        "/ocr": (context) => ocrScreen()
       }
     );
   }
