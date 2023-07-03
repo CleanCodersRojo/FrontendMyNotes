@@ -18,7 +18,8 @@ class _EditScreenState extends State<EditScreen> {
   void initState() {
     if (widget.note != null) {
       _tittlecontroller = TextEditingController(text: widget.note!.titulo);
-      _contentcontroller = TextEditingController(text: widget.note!.cuerpo);
+      _contentcontroller =
+          TextEditingController(text: widget.note!.getresumen());
     }
 
     super.initState();

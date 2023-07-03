@@ -25,34 +25,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getdata() async {
-    final url = 'http://192.168.0.106:3000/nota/findbyuserid/user1';
+    final url = 'http://192.168.1.97:3000/nota/byUser/user1';
     final response = await http.get(Uri.parse(url));
-    List<Note> notasList = [];
-    if (response.statusCode == 200 ) {
-      final responseJson = jsonDecode(response.body);
-      List<dynamic> notas = responseJson['value'];
-
-      // ignore: avoid_function_literals_in_foreach_calls
-      notas.forEach((nota) {
-        DateTime fc = tramsformarfecha(nota['fechaCreacion']);
-        DateTime fa = tramsformarfecha(nota['fechaActualizacion']);
-        var latitud = nota['latitud'];
-        print(latitud);
-
-        notasList.add(Note(
-            notaId: nota['notaId'],
-            titulo: nota['titulo'],
-            cuerpo: nota['cuerpo'],
-            fechaCreacion: fc,
-            fechaActualizacion: fa,
-            latitud: nota['latitud'].toDouble(),
-            longitud: nota['altitud'].toDouble(),
-            usuarioId: nota['usuarioId']));
-      });
-      filteredNotes = notasList;
-    } else {
-      throw Exception('Error al obtener los datos');
+    List<Note> notas = [];
+    if (response.statusCode == 200) {
+      List<dynamic> jsonList = jsonDecode(response.body)['value']['value'];
+      notas = jsonList.map((notaMap) {
+        return Note.fromMap(notaMap);
+      }).toList();
     }
+    filteredNotes = notas;
   }
 
   @override
@@ -80,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   void deleteNote(int index) async {
     Note note = filteredNotes[index];
-    final url = 'http://192.168.0.106:3000/nota/${note.notaId}';
+    final url = 'http://192.168.1.97:3000/nota/${note.notaId}';
     await http.delete(Uri.parse(url));
     setState(() {
       filteredNotes.remove(note);
@@ -236,7 +218,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           height: 1.5),
                                       children: [
                                         TextSpan(
-                                          text: filteredNotes[index].cuerpo,
+                                          text:
+                                              filteredNotes[index].getresumen(),
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.normal,
@@ -253,6 +236,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                         fontSize: 10,
                                         fontStyle: FontStyle.italic,
                                         color: Colors.grey.shade800),
+                                  ),
+                                ),
+                                trailing: IconButton(
+                                  onPressed: () async {
+                                    final result =
+                                        await confirmationDialog(context);
+                                    if (result != null && result) {
+                                      deleteNote(index);
+                                    }
+                                  },
+                                  icon: Icon(
+                                    Icons.delete,
                                   ),
                                 ),
                               ),
