@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:note_app/screens/speech.dart';
 
 import '../models/note.dart';
 
@@ -83,15 +84,54 @@ class _EditScreenState extends State<EditScreen> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        elevation: 10,
-        onPressed: () {
-          Navigator.pop(
-              context, [_tittlecontroller.text, _contentcontroller.text]);
-        },
-        backgroundColor: Colors.grey.shade800,
-        child: Icon(Icons.save),
+      
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        
+        children: [
+
+          Padding(
+            padding: const EdgeInsets.only(left: 25),
+            child: FloatingActionButton(
+              heroTag: 'boton_ocr',
+              elevation: 10,
+              
+                
+              onPressed: () {Navigator.pushNamed(context,"/ocr");},
+              
+              backgroundColor: Colors.grey.shade800,
+              child: Icon(Icons.camera_alt),
+          
+            ),
+          ),
+        
+        FloatingActionButton(
+          heroTag: 'boton_speech',
+          
+            elevation: 10,
+            onPressed: () {Navigator.pushNamed(context,"/speech");},
+            
+            backgroundColor: Colors.grey.shade800,
+            child: Icon(Icons.mic),
+
+          ),
+
+          FloatingActionButton(
+            heroTag: 'boton_guardar',
+            elevation: 10,
+            onPressed: () {
+              Navigator.pop(
+                  context, [_tittlecontroller.text, _contentcontroller.text]);
+            },
+            
+            backgroundColor: Colors.grey.shade800,
+            child: Icon(Icons.save),
+
+          ),
+        ],
       ),
+      
+      
     );
   }
 }
