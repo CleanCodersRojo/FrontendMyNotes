@@ -152,7 +152,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.only(top: 30),
                         itemCount: filteredNotes.length,
                         itemBuilder: (context, index) {
-                          return Card(
+          
+              return Dismissible(key: Key(index.toString()),
+                direction: DismissDirection.startToEnd,
+                background: Container (
+                  color: Colors.red,
+                  padding: EdgeInsets.only(left: 5),
+                    child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: Icon(Icons.delete, color: Colors.black)
+                )
+                ),
+              onDismissed: (direction) {
+                deleteNote (index);
+              },
+
+                          child: Card(
                             margin: EdgeInsets.only(bottom: 20),
                             color: getRandomColor(),
                             elevation: 3,
@@ -223,21 +238,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                         color: Colors.grey.shade800),
                                   ),
                                 ),
-                                trailing: IconButton(
-                                  onPressed: () async {
-                                    final result =
-                                        await confirmationDialog(context);
-                                    if (result != null && result) {
-                                      deleteNote(index);
-                                    }
-                                  },
-                                  icon: Icon(
-                                    Icons.delete,
-                                  ),
-                                ),
                               ),
                             ),
-                          );
+                          ),
+                        );
                         },
                       );
                     }
