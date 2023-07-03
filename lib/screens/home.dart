@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getdata() async {
-    final url = 'http://192.168.1.97:3000/nota/byUser/user1';
+    final url = 'http://192.168.0.104:3000/nota/byUser/user1';
     final response = await http.get(Uri.parse(url));
     List<Note> notas = [];
     if (response.statusCode == 200) {
@@ -152,40 +152,38 @@ class _HomeScreenState extends State<HomeScreen> {
                         padding: EdgeInsets.only(top: 30),
                         itemCount: filteredNotes.length,
                         itemBuilder: (context, index) {
-          
-              return Dismissible(key: Key(index.toString()),
-                direction: DismissDirection.startToEnd,
-                background: Container (
-                  color: Colors.red,
-                  padding: EdgeInsets.only(left: 5),
-                    child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Icon(Icons.delete, color: Colors.black)
-                )
-                ),
-              onDismissed: (direction) {
-                deleteNote (index);
-              },
-
-                          child: Card(
-                            margin: EdgeInsets.only(bottom: 20),
-                            color: getRandomColor(),
-                            elevation: 3,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: ListTile(
-                                onTap: () async {
-                                  final result = await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (BuildContext context) =>
-                                          EditScreen(
-                                              note: filteredNotes[index]),
-                                    ),
-                                  );
-                                  /*
+                          return Dismissible(
+                            key: Key(index.toString()),
+                            direction: DismissDirection.startToEnd,
+                            background: Container(
+                                color: Colors.red,
+                                padding: EdgeInsets.only(left: 5),
+                                child: Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: Icon(Icons.delete,
+                                        color: Colors.black))),
+                            onDismissed: (direction) {
+                              deleteNote(index);
+                            },
+                            child: Card(
+                              margin: EdgeInsets.only(bottom: 20),
+                              color: getRandomColor(),
+                              elevation: 3,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: ListTile(
+                                  onTap: () async {
+                                    final result = await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (BuildContext context) =>
+                                            EditScreen(
+                                                note: filteredNotes[index]),
+                                      ),
+                                    );
+                                    /*
                         if (result != null) {
                           setState(() {
                             int original_index =
@@ -205,55 +203,56 @@ class _HomeScreenState extends State<HomeScreen> {
                           });
                         }
                         */
-                                },
-                                title: RichText(
-                                  maxLines: 3,
-                                  overflow: TextOverflow.ellipsis,
-                                  text: TextSpan(
-                                      text: '${filteredNotes[index].titulo}\n',
-                                      style: TextStyle(
-                                          color: Colors.black,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 18,
-                                          height: 1.5),
-                                      children: [
-                                        TextSpan(
-                                          text:
-                                              filteredNotes[index].getresumen(),
-                                          style: TextStyle(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.normal,
-                                              fontSize: 14,
-                                              height: 1.5),
-                                        )
-                                      ]),
-                                ),
-                                subtitle: Padding(
-                                  padding: const EdgeInsets.only(top: 10.0),
-                                  child: Text(
-                                    'edited: ${DateFormat('EEE MMM d, yyyy h:mm a').format(filteredNotes[index].fechaCreacion)}',
-                                    style: TextStyle(
-                                        fontSize: 10,
-                                        fontStyle: FontStyle.italic,
-                                        color: Colors.grey.shade800),
-                                  ),
-                                ),
-                                trailing: IconButton(
-                                  onPressed: () async {
-                                    final result =
-                                        await confirmationDialog(context);
-                                    if (result != null && result) {
-                                      deleteNote(index);
-                                    }
                                   },
-                                  icon: Icon(
-                                    Icons.delete,
+                                  title: RichText(
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    text: TextSpan(
+                                        text:
+                                            '${filteredNotes[index].titulo}\n',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 18,
+                                            height: 1.5),
+                                        children: [
+                                          TextSpan(
+                                            text: filteredNotes[index]
+                                                .getresumen(),
+                                            style: TextStyle(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.normal,
+                                                fontSize: 14,
+                                                height: 1.5),
+                                          )
+                                        ]),
+                                  ),
+                                  subtitle: Padding(
+                                    padding: const EdgeInsets.only(top: 10.0),
+                                    child: Text(
+                                      'edited: ${DateFormat('EEE MMM d, yyyy h:mm a').format(filteredNotes[index].fechaCreacion)}',
+                                      style: TextStyle(
+                                          fontSize: 10,
+                                          fontStyle: FontStyle.italic,
+                                          color: Colors.grey.shade800),
+                                    ),
+                                  ),
+                                  trailing: IconButton(
+                                    onPressed: () async {
+                                      final result =
+                                          await confirmationDialog(context);
+                                      if (result != null && result) {
+                                        deleteNote(index);
+                                      }
+                                    },
+                                    icon: Icon(
+                                      Icons.delete,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
+                          );
                         },
                       );
                     }
