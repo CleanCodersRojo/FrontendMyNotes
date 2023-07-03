@@ -25,32 +25,16 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getdata() async {
-    final url = 'http://192.168.0.106:3000/nota/findbyuserid/user1';
+    final url = 'http://192.168.0.104:3000/nota/byUser/user1';
     final response = await http.get(Uri.parse(url));
-    List<Note> notasList = [];
+    List<Note> notas = [];
     if (response.statusCode == 200) {
-      final responseJson = jsonDecode(response.body);
-      List<dynamic> notas = responseJson['value'];
-
-      // ignore: avoid_function_literals_in_foreach_calls
-      notas.forEach((nota) {
-        DateTime fc = tramsformarfecha(nota['fechaCreacion']);
-        DateTime fa = tramsformarfecha(nota['fechaActualizacion']);
-
-        notasList.add(Note(
-            notaId: nota['notaId'],
-            titulo: nota['titulo'],
-            cuerpo: nota['cuerpo'],
-            fechaCreacion: fc,
-            fechaActualizacion: fa,
-            latitud: nota['latitud'].toDouble(),
-            longitud: nota['altitud'].toDouble(),
-            usuarioId: nota['usuarioId']));
-      });
-      filteredNotes = notasList;
-    } else {
-      throw Exception('Error al obtener los datos');
+      List<dynamic> jsonList = jsonDecode(response.body)['value']['value'];
+      notas = jsonList.map((notaMap) {
+        return Note.fromMap(notaMap);
+      }).toList();
     }
+    filteredNotes = notas;
   }
 
   @override
@@ -219,7 +203,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                           height: 1.5),
                                       children: [
                                         TextSpan(
-                                          text: filteredNotes[index].cuerpo,
+                                          text:
+                                              filteredNotes[index].getresumen(),
                                           style: TextStyle(
                                               color: Colors.black,
                                               fontWeight: FontWeight.normal,

@@ -1,25 +1,115 @@
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+abstract class Cuerpo {
+  late String tipo;
+  Map<String, dynamic> toMap();
+}
+
+class CuerpoTexto implements Cuerpo {
+  @override
+  String tipo;
+  String texto;
+
+  CuerpoTexto({required this.tipo, required this.texto});
+
+  factory CuerpoTexto.fromMap(Map<String, dynamic> json) {
+    return CuerpoTexto(tipo: json['tipo'], texto: json['texto']);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'tipo': 'Texto Plano', 'texto': texto};
+  }
+}
+
+class CuerpoImagen implements Cuerpo {
+  @override
+  String tipo;
+  num bytes;
+
+  CuerpoImagen({required this.tipo, required this.bytes});
+
+  factory CuerpoImagen.fromMap(Map<String, dynamic> json) {
+    return CuerpoImagen(tipo: json['tipo'], bytes: json['bytes']);
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'tipo': 'Imagen', 'bytes': bytes};
+  }
+}
+
 class Note {
   String notaId;
   String titulo;
-  String cuerpo;
+  List<Cuerpo> cuerpo;
   DateTime fechaCreacion;
+  DateTime? fechaEliminacion;
   DateTime fechaActualizacion;
-  double latitud;
-  double longitud;
+  double? latitud;
+  double? altitud;
   String usuarioId;
 
-  Note(
-      {required this.notaId,
-      required this.titulo,
-      required this.cuerpo,
-      required this.fechaCreacion,
-      required this.fechaActualizacion,
-      required this.latitud,
-      required this.longitud,
-      required this.usuarioId});
+  Note({
+    required this.notaId,
+    required this.titulo,
+    required this.cuerpo,
+    required this.fechaCreacion,
+    required this.fechaEliminacion,
+    required this.fechaActualizacion,
+    required this.latitud,
+    required this.altitud,
+    required this.usuarioId,
+  });
+
+  String getresumen() {
+    StringBuffer sb = StringBuffer();
+
+    for (Cuerpo c in cuerpo) {
+      if (c is CuerpoTexto) {
+        sb.write(c.texto);
+        sb.write(' ');
+      } else if (c is CuerpoImagen) {
+        sb.write(c.bytes.toString());
+        sb.write(' ');
+      }
+    }
+
+    return sb.toString();
+  }
+
+  factory Note.fromMap(Map<String, dynamic> json) {
+    List<dynamic> cuerpoJson = json['cuerpo'];
+    List<Cuerpo> cuerpo = [];
+    for (var i = 0; i < cuerpoJson.length; i++) {
+      var cuerpoMap = cuerpoJson[i];
+      var tipo = cuerpoMap['tipo'];
+      if (tipo == 'Texto Plano') {
+        cuerpo.add(CuerpoTexto.fromMap(cuerpoMap));
+      } else if (tipo == 'Imagen') {
+        cuerpo.add(CuerpoImagen.fromMap(cuerpoMap));
+      } else {
+        throw Exception('Tipo de cuerpo no válido: $tipo');
+      }
+    }
+
+    return Note(
+      notaId: json['notaId'],
+      titulo: json['titulo'],
+      cuerpo: cuerpo,
+      fechaCreacion: DateTime.parse(json['fechaCreacion']),
+      fechaEliminacion: json['fechaEliminacion']['value'] == null
+          ? null
+          : DateTime.parse(json['fechaEliminacion']['value']),
+      fechaActualizacion: DateTime.parse(json['fechaActualizacion']),
+      latitud: json['latitud']['value'] == null
+          ? null
+          : double.parse(json['latitud']['value'].toString()),
+      altitud: json['altitud']['value'] == null
+          ? null
+          : double.parse(json['altitud']['value'].toString()),
+      usuarioId: json['usuarioId'],
+    );
+  }
 }
 
 class CreateNotaDto {
@@ -56,74 +146,3 @@ class CreateNotaDto {
     }
   }
 }
-
-
-
-
-
-/*
-List<Note> sampleNotes = [
-  Note(
-    id: 0,
-    title: 'Like and Subscribe',
-    content:
-        'A FREE way to support the channel is to give us a LIKE . It does not cost you but means a lot to us.\nIf you are new here please Subscribe',
-    modifiedTime: DateTime(2022, 1, 1, 34, 5),
-  ),
-  Note(
-    id: 1,
-    title: 'Recipes to Try',
-    content:
-        '1. Chicken Alfredo\n2. Vegan chili\n3. Spaghetti carbonara\n4. Chocolate lava cake',
-    modifiedTime: DateTime(2022, 1, 1, 34, 5),
-  ),
-  Note(
-    id: 2,
-    title: 'Books to Read',
-    content:
-        '1. To Kill a Mockingbird\n2. 1984\n3. The Great Gatsby\n4. The Catcher in the Rye',
-    modifiedTime: DateTime(2023, 3, 1, 19, 5),
-  ),
-  Note(
-    id: 3,
-    title: 'Gift Ideas for Mom',
-    content: '1. Jewelry box\n2. Cookbook\n3. Scarf\n4. Spa day gift card',
-    modifiedTime: DateTime(2023, 1, 4, 16, 53),
-  ),
-  Note(
-    id: 4,
-    title: 'Workout Plan',
-    content:
-        'Monday:\n- Run 5 miles\n- Yoga class\nTuesday:\n- HIIT circuit training\n- Swimming laps\nWednesday:\n- Rest day\nThursday:\n- Weightlifting\n- Spin class\nFriday:\n- Run 3 miles\n- Pilates class\nSaturday:\n- Hiking\n- Rock climbing',
-    modifiedTime: DateTime(2023, 5, 1, 11, 6),
-  ),
-  Note(
-    id: 5,
-    title: 'Bucket List',
-    content:
-        '1. Travel to Japan\n2. Learn to play the guitar\n3. Write a novel\n4. Run a marathon\n5. Start a business',
-    modifiedTime: DateTime(2023, 1, 6, 13, 9),
-  ),
-  Note(
-    id: 6,
-    title: 'Little pigs',
-    content:
-        "Once upon a time there were three little pigs who set out to seek their fortune.",
-    modifiedTime: DateTime(2023, 3, 7, 11, 12),
-  ),
-  Note(
-    id: 7,
-    title: 'Meeting Notes',
-    content:
-        'Attendees: John, Mary, David\nAgenda:\n- Budget review\n- Project updates\n- Upcoming events',
-    modifiedTime: DateTime(2023, 2, 1, 15, 14),
-  ),
-  Note(
-    id: 8,
-    title: 'Ideas for Vacation',
-    content:
-        '1. Visit Grand Canyon\n2. Go on a hot air balloon ride\n3. Try local cuisine\n4. Attend a concert',
-    modifiedTime: DateTime(2023, 2, 1, 12, 34),
-  ),
-];
-*/
