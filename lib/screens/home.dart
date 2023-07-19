@@ -16,7 +16,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   List<Note> filteredNotes = [];
+  TextEditingController barra = new TextEditingController();
   bool sorted = false;
+  bool flag = true;
 
   DateTime tramsformarfecha(String fecha) {
     DateFormat formato = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -25,16 +27,24 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getdata() async {
-    final url = 'http://192.168.0.104:3000/nota/byUser/user1';
-    final response = await http.get(Uri.parse(url));
-    List<Note> notas = [];
-    if (response.statusCode == 200) {
-      List<dynamic> jsonList = jsonDecode(response.body)['value']['value'];
-      notas = jsonList.map((notaMap) {
-        return Note.fromMap(notaMap);
-      }).toList();
+    if (this.flag) {
+      final url = 'http://192.168.0.103:3000/nota/byUser/user1';
+      final response = await http.get(Uri.parse(url));
+      List<Note> notas = [];
+      if (response.statusCode == 200) {
+        List<dynamic> jsonList = jsonDecode(response.body)['value']['value'];
+        notas = jsonList.map((notaMap) {
+          return Note.fromMap(notaMap);
+        }).toList();
+      }
+      filteredNotes = notas;
+    } else {
+      if (barra.text.isNotEmpty) {
+        onSearchTextChanged(barra.text);
+      } else {
+        onSearchTextChanged2();
+      }
     }
-    filteredNotes = notas;
   }
 
   @override
@@ -60,22 +70,46 @@ class _HomeScreenState extends State<HomeScreen> {
     return backgroundColors[random.nextInt(backgroundColors.length)];
   }
 
-  void deleteNote(int index) async {
-    Note note = filteredNotes[index];
-    final url = 'http://192.168.1.97:3000/nota/${note.notaId}';
-    await http.delete(Uri.parse(url));
+  void deleteNote(Note nota) async {
+    final url = 'http://192.168.0.103:3000/nota';
+    final headers = {'Content-Type': 'application/json'};
+    final body = jsonEncode({
+      'id': nota.notaId,
+      'fechaEliminacion': DateTime.now().toString(),
+      'usuarioId': nota.usuarioId
+    });
+
+    final response =
+        await http.delete(Uri.parse(url), headers: headers, body: body);
+
+    if (response.statusCode == 200) {
+      print('La nota fue eliminada');
+    } else {
+      print('Error al eliminar la nota: ${response.statusCode}');
+    }
     setState(() {
-      filteredNotes.remove(note);
+      filteredNotes.remove(nota);
     });
   }
 
   void onSearchTextChanged(String search) {
     setState(() {
-      filteredNotes
-          .where((note) =>
-              note.titulo.toLowerCase().contains(search.toLowerCase()) ||
-              note.titulo.toLowerCase().contains(search.toLowerCase()))
-          .toList();
+      this.flag = false;
+      List<Note> aux = [];
+      filteredNotes.forEach((element) {
+        if (element.titulo.toLowerCase().contains(search.toLowerCase()) ||
+            element.getresumen().toLowerCase().contains(search.toLowerCase())) {
+          aux.add(element);
+        }
+      });
+      filteredNotes = aux;
+    });
+  }
+
+  void onSearchTextChanged2() {
+    setState(() {
+      this.flag = true;
+      getdata();
     });
   }
 
@@ -116,6 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
               height: 20,
             ),
             TextField(
+              controller: barra,
               onChanged: onSearchTextChanged,
               style: TextStyle(fontSize: 16, color: Colors.white),
               decoration: InputDecoration(
@@ -156,14 +191,18 @@ class _HomeScreenState extends State<HomeScreen> {
                             key: Key(index.toString()),
                             direction: DismissDirection.startToEnd,
                             background: Container(
-                                color: Colors.red,
-                                padding: EdgeInsets.only(left: 5),
+                                margin: EdgeInsets.only(bottom: 20),
+                                padding: const EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  color: Colors.red,
+                                ),
                                 child: Align(
                                     alignment: Alignment.centerLeft,
                                     child: Icon(Icons.delete,
                                         color: Colors.black))),
                             onDismissed: (direction) {
-                              deleteNote(index);
+                              deleteNote(filteredNotes[index]);
                             },
                             child: Card(
                               margin: EdgeInsets.only(bottom: 20),
@@ -237,18 +276,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Colors.grey.shade800),
                                     ),
                                   ),
-                                  trailing: IconButton(
-                                    onPressed: () async {
-                                      final result =
-                                          await confirmationDialog(context);
-                                      if (result != null && result) {
-                                        deleteNote(index);
-                                      }
-                                    },
-                                    icon: Icon(
-                                      Icons.delete,
-                                    ),
-                                  ),
                                 ),
                               ),
                             ),
@@ -266,14 +293,11 @@ class _HomeScreenState extends State<HomeScreen> {
           final result = await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (BuildContext context) => const EditScreen(),
+              builder: (BuildContext context) => EditScreen(),
             ),
           );
-          if (result != null) {
-            CreateNotaDto nota = CreateNotaDto(result[0], result[1]);
-            setState(() {
-              nota.crearNota();
-            });
+          if (result[0] != null) {
+            print(result[0]);
           }
         },
         elevation: 10,
