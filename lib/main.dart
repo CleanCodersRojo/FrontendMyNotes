@@ -20,20 +20,17 @@ class MainApp extends StatelessWidget {
   }
 }
 
-
 class MyApp extends StatelessWidget {
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      initialRoute: "/",
-      routes: {
-        "/" : (context) => HomeScreen(),
-        "/editar": (context) => EditScreen(),
-        "/speech": (context) => SpeechScreen(),
-        "/ocr": (context) => ocrScreen()
-      }
-    );
+        debugShowCheckedModeBanner: false,
+        initialRoute: "/",
+        routes: {
+          "/": (context) => HomeScreen(),
+          "/editar": (context) => EditScreen(),
+          "/speech": (context) => SpeechScreen(),
+          "/ocr": (context) => ocrScreen()
+        });
   }
 }
