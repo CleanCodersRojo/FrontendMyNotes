@@ -123,7 +123,7 @@ class _EditScreenState extends State<EditScreen> {
                       if(widget.note != null){
                         Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => InformationScreen()),
+                        MaterialPageRoute(builder: (context) => InformationScreen(nota: widget.note,)),
                       );
                       }else{
                         ScaffoldMessenger.of(context).showSnackBar(

@@ -290,15 +290,15 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
-          final result = await Navigator.push(
+          await Navigator.push(
             context,
             MaterialPageRoute(
               builder: (BuildContext context) => EditScreen(),
             ),
           );
-          if (result[0] != null) {
-            print(result[0]);
-          }
+          // if (result[0] != null) {
+          //   print(result[0]);
+          // }
         },
         elevation: 10,
         backgroundColor: Colors.grey.shade800,

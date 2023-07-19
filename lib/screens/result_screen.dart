@@ -20,9 +20,16 @@ class ResultScreen extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 IconButton(
                     onPressed: () {
-                      Navigator.push(
+                      if(nota != null){
+                        Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => EditScreen()),
+                        MaterialPageRoute(builder: (context) => EditScreen(note: nota)),
+                      );
+                      }else(
+                        Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => EditScreen(notasininstanciar: notasininstanciar)),
+                      )
                       );
                     },
                     padding: EdgeInsets.all(0),

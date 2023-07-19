@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import '../models/note.dart';
 import 'edit.dart';
 
 class InformationScreen extends StatelessWidget{
   // final String text;
-  
-  const InformationScreen({superKey});
+  final Note? nota;
+  const InformationScreen({superKey, this.nota});
 
   @override
   Widget build(BuildContext context){  
@@ -20,10 +21,8 @@ class InformationScreen extends StatelessWidget{
             children: [
               IconButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => EditScreen()),
-                      );
+                      Navigator.pop(context);
+                      
                     },
                     padding: EdgeInsets.all(0),
                     icon: Container(
