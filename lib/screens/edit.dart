@@ -1,26 +1,34 @@
-import 'package:flutter/material.dart';
-import 'package:note_app/screens/speech.dart';
+import 'dart:ffi';
 
+import 'package:flutter/material.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:note_app/screens/home.dart';
+import 'package:note_app/screens/speech.dart';
 import '../models/note.dart';
+import 'ocr.dart';
 
 class EditScreen extends StatefulWidget {
   final Note? note;
-  const EditScreen({super.key, this.note});
+  final Dtoforspeechandocr? notasininstanciar;
+  const EditScreen({super.key, this.note, this.notasininstanciar});
 
   @override
   State<EditScreen> createState() => _EditScreenState();
 }
 
 class _EditScreenState extends State<EditScreen> {
+  HtmlEditorController _controller = HtmlEditorController();
+
   TextEditingController _tittlecontroller = TextEditingController();
-  TextEditingController _contentcontroller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     if (widget.note != null) {
       _tittlecontroller = TextEditingController(text: widget.note!.titulo);
-      _contentcontroller =
-          TextEditingController(text: widget.note!.getresumen());
+    } else if (widget.notasininstanciar != null) {
+      _tittlecontroller =
+          TextEditingController(text: widget.notasininstanciar!.titulo);
     }
 
     super.initState();
@@ -39,7 +47,10 @@ class _EditScreenState extends State<EditScreen> {
               children: [
                 IconButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
                     },
                     padding: EdgeInsets.all(0),
                     icon: Container(
@@ -52,86 +63,225 @@ class _EditScreenState extends State<EditScreen> {
                         Icons.arrow_back_ios_new,
                         color: Colors.white,
                       ),
+                    )),
+                IconButton(
+                    onPressed: () async {
+                      if (widget.note != null) {
+                        ServicioModificarnota service =
+                            new ServicioModificarnota();
+                        List<Cuerpo> cuerponota = [];
+                        cuerponota.add(CuerpoTexto(
+                            tipo: 'Texto Plano',
+                            texto: await _controller.getText()));
+                        widget.note!.cuerpo = cuerponota;
+                        service.modificar(widget.note!);
+                      } else {
+                        List<Cuerpo> cuerponota = [];
+                        cuerponota.add(CuerpoTexto(
+                            tipo: 'Texto Plano',
+                            texto: await _controller.getText()));
+                        CreateNotaDto newnota = CreateNotaDto(
+                            _tittlecontroller.text,
+                            cuerponota,
+                            Optional<double>(),
+                            Optional<double>());
+                        newnota.crearNota();
+                      }
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                      );
+                    },
+                    padding: EdgeInsets.all(0),
+                    icon: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                          color: Colors.grey.shade800.withOpacity(0.8),
+                          borderRadius: BorderRadius.circular(10)),
+                      child: const Icon(
+                        Icons.check,
+                        color: Colors.green,
+                        size: 30,
+                      ),
                     ))
               ],
             ),
             Expanded(
-                child: ListView(
-              children: [
-                TextField(
-                  controller: _tittlecontroller,
-                  style: TextStyle(color: Colors.white, fontSize: 30),
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'Title',
-                      hintStyle: TextStyle(color: Colors.grey, fontSize: 30)),
-                ),
-                TextField(
-                  maxLines: null,
-                  controller: _contentcontroller,
-                  style: TextStyle(
-                    color: Colors.white,
+              child: ListView(
+                children: [
+                  TextField(
+                    focusNode: _focusNode,
+                    cursorColor: Colors.white,
+                    controller: _tittlecontroller,
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 30,
+                        fontWeight: FontWeight.bold),
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Titulo',
+                        hintStyle: TextStyle(
+                            color: Colors.grey,
+                            fontSize: 30,
+                            fontWeight: FontWeight.bold)),
                   ),
-                  decoration: InputDecoration(
-                      border: InputBorder.none,
-                      hintText: 'type something here',
-                      hintStyle: TextStyle(
-                        color: Colors.grey,
-                      )),
-                )
-              ],
-            ))
+                  SizedBox(
+                    height: 15,
+                  ),
+                  HtmlEditor(
+                    callbacks: Callbacks(
+                      onFocus: () {
+                        if (_focusNode.hasFocus) {
+                          _focusNode.unfocus();
+                        }
+                      },
+                      onInit: () {
+                        if (widget.note != null) {
+                          _controller
+                              .setText(widget.note!.cuerpo[0].obtenerDato());
+                        } else if (widget.notasininstanciar != null) {
+                          _controller.setText(widget
+                              .notasininstanciar!.cuerpo[0]
+                              .obtenerDato());
+                        }
+                      },
+                    ),
+                    controller: _controller,
+                    htmlEditorOptions: HtmlEditorOptions(
+                      darkMode: true,
+                      hint: "Escribe algo...",
+                      initialText: "",
+                    ),
+                    htmlToolbarOptions: HtmlToolbarOptions(
+                      toolbarPosition: ToolbarPosition.custom,
+                    ),
+                    otherOptions: OtherOptions(
+                      decoration: BoxDecoration(
+                        border: Border.all(width: 0, color: Colors.transparent),
+                        color: Colors.grey.shade900,
+                      ),
+                      height: MediaQuery.of(context).size.height,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ToolbarWidget(
+              controller: _controller,
+              htmlToolbarOptions: HtmlToolbarOptions(
+                  toolbarPosition: ToolbarPosition.custom,
+                  toolbarType: ToolbarType.nativeScrollable,
+                  toolbarItemHeight: 50,
+                  defaultToolbarButtons: [
+                    FontButtons(
+                        clearAll: false,
+                        strikethrough: false,
+                        subscript: false,
+                        superscript: false),
+                    ColorButtons(),
+                    ListButtons(listStyles: false),
+                    ParagraphButtons(
+                        increaseIndent: false,
+                        decreaseIndent: false,
+                        textDirection: false,
+                        lineHeight: false,
+                        caseConverter: false),
+                    InsertButtons(
+                        link: false,
+                        picture: true,
+                        audio: false,
+                        video: false,
+                        otherFile: false,
+                        table: false,
+                        hr: true),
+                    OtherButtons(
+                        fullscreen: false, codeview: false, help: false),
+                    StyleButtons(),
+                    FontSettingButtons(),
+                  ],
+                  customToolbarButtons: [
+                    //your widgets here
+                    ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.grey.shade900)),
+                      onPressed: () async {
+                        if (widget.note != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ocrScreen(
+                                      nota: widget.note,
+                                    )),
+                          );
+                        } else {
+                          List<Cuerpo> cuerponota = [];
+                          cuerponota.add(CuerpoTexto(
+                              tipo: 'Texto Plano',
+                              texto: await _controller.getText()));
+                          Dtoforspeechandocr notanoinstanciada =
+                              new Dtoforspeechandocr(
+                                  _tittlecontroller.text, cuerponota);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ocrScreen(
+                                      notasininstanciar: notanoinstanciada,
+                                    )),
+                          );
+                        }
+                      },
+                      child: Icon(Icons.camera_alt),
+                    ),
+
+                    ElevatedButton(
+                      onPressed: () async {
+                        if (widget.note != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SpeechScreen(
+                                      nota: widget.note as Note,
+                                    )),
+                          );
+                        } else {
+                          List<Cuerpo> cuerponota = [];
+                          cuerponota.add(CuerpoTexto(
+                              tipo: 'Texto Plano',
+                              texto: await _controller.getText()));
+                          Dtoforspeechandocr notanoinstanciada =
+                              new Dtoforspeechandocr(
+                                  _tittlecontroller.text, cuerponota);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SpeechScreen(
+                                      notasininstanciar: notanoinstanciada
+                                          as Dtoforspeechandocr,
+                                    )),
+                          );
+                        }
+                      },
+                      style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all<Color>(
+                              Colors.grey.shade900)),
+                      child: Icon(Icons.mic),
+                    )
+                  ],
+                  buttonColor: Colors.white,
+                  dropdownBackgroundColor: Colors.black,
+                  textStyle: TextStyle(
+                    color: Colors.white,
+                  ) //required to place toolbar anywhere!
+                  //other options
+                  ),
+              callbacks: null,
+            )
           ],
         ),
       ),
-      
-      floatingActionButton: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        
-        children: [
-
-          Padding(
-            padding: const EdgeInsets.only(left: 25),
-            child: FloatingActionButton(
-              heroTag: 'boton_ocr',
-              elevation: 10,
-              
-                
-              onPressed: () {Navigator.pushNamed(context,"/ocr");},
-              
-              backgroundColor: Colors.grey.shade800,
-              child: Icon(Icons.camera_alt),
-          
-            ),
-          ),
-        
-        FloatingActionButton(
-          heroTag: 'boton_speech',
-          
-            elevation: 10,
-            onPressed: () {Navigator.pushNamed(context,"/speech");},
-            
-            backgroundColor: Colors.grey.shade800,
-            child: Icon(Icons.mic),
-
-          ),
-
-          FloatingActionButton(
-            heroTag: 'boton_guardar',
-            elevation: 10,
-            onPressed: () {
-              Navigator.pop(
-                  context, [_tittlecontroller.text, _contentcontroller.text]);
-            },
-            
-            backgroundColor: Colors.grey.shade800,
-            child: Icon(Icons.save),
-
-          ),
-        ],
-      ),
-      
-      
     );
   }
 }
