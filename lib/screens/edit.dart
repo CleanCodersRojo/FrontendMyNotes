@@ -1,10 +1,12 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:note_app/screens/home.dart';
 import 'package:note_app/screens/speech.dart';
 import '../models/note.dart';
+import 'informationNote.dart';
 
 class EditScreen extends StatefulWidget {
   final Note? note;
@@ -25,7 +27,6 @@ class _EditScreenState extends State<EditScreen> {
     if (widget.note != null) {
       _tittlecontroller = TextEditingController(text: widget.note!.titulo);
     }
-
     super.initState();
   }
 
@@ -59,36 +60,79 @@ class _EditScreenState extends State<EditScreen> {
                         color: Colors.white,
                       ),
                     )),
-                IconButton(
-                    onPressed: () async {
-                      if (widget.note != null) {
-                        ServicioModificarnota service =
-                            new ServicioModificarnota();
-                        List<Cuerpo> cuerponota = [];
-                        cuerponota.add(CuerpoTexto(
-                            tipo: 'Texto Plano',
-                            texto: await _controller.getText()));
-                        widget.note!.cuerpo = cuerponota;
-                        service.modificar(widget.note!);
-                      } else {
-                        List<Cuerpo> cuerponota = [];
-                        cuerponota.add(CuerpoTexto(
-                            tipo: 'Texto Plano',
-                            texto: await _controller.getText()));
-                        CreateNotaDto newnota = CreateNotaDto(
-                            _tittlecontroller.text,
-                            cuerponota,
-                            Optional<double>(),
-                            Optional<double>());
-                        newnota.crearNota();
-                      }
+                    
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                        onPressed: () async {
+                          if (widget.note != null) {
+                            ServicioModificarnota service = new ServicioModificarnota();
+                            List<Cuerpo> cuerponota = [];
+                            cuerponota.add(CuerpoTexto(
+                                tipo: 'Texto Plano',
+                                texto: await _controller.getText()));
+                            widget.note!.cuerpo = cuerponota;
+                            service.modificar(widget.note!);
+                          } else {
+                            List<Cuerpo> cuerponota = [];
+                            cuerponota.add(CuerpoTexto(
+                                tipo: 'Texto Plano',
+                                texto: await _controller.getText()));
 
-                      Navigator.push(
+                                final position = await Geolocator.getCurrentPosition(//obtener la ubicacion
+                                    desiredAccuracy: LocationAccuracy.high,
+                                );
+                            CreateNotaDto newnota = CreateNotaDto(
+                                _tittlecontroller.text,
+                                cuerponota,
+                                Optional<double>(position.latitude),
+                                Optional<double>(position.longitude));
+                            newnota.crearNota();
+                          }
+
+              
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => HomeScreen()),
+                          );
+                        },
+                        padding: EdgeInsets.all(0),
+                        icon: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade800.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Icon(
+                            Icons.check,
+                            color: Colors.green,
+                            size: 30,
+                          ),
+                        )
+                      ),
+                  
+                    IconButton(
+
+                    onPressed: () async {
+                      if(widget.note != null){
+                        Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
+                        MaterialPageRoute(builder: (context) => InformationScreen()),
                       );
+                      }else{
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                            content: Text('La información de la nota todavía no se puede visualizar.'),
+                            duration: Duration(seconds: 3),
+                            ),
+                        );
+                      }
+                      
+                      
+                    
                     },
-                    padding: EdgeInsets.all(0),
+                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
                     icon: Container(
                       width: 40,
                       height: 40,
@@ -96,13 +140,17 @@ class _EditScreenState extends State<EditScreen> {
                           color: Colors.grey.shade800.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10)),
                       child: const Icon(
-                        Icons.check,
-                        color: Colors.green,
+                        Icons.more_vert,
+                        color: Colors.white,
                         size: 30,
                       ),
                     ))
+                  ],
+                ),
               ],
             ),
+
+
             Expanded(
               child: ListView(
                 children: [
@@ -141,7 +189,8 @@ class _EditScreenState extends State<EditScreen> {
                     ),
                     controller: _controller,
                     htmlEditorOptions: HtmlEditorOptions(
-                      darkMode: true,
+                       darkMode: true,
+                      
                       hint: "Escribe algo...",
                       initialText: "",
                     ),
