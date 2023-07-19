@@ -34,7 +34,7 @@ class CuerpoTexto extends Cuerpo {
 
 class ServicioModificarnota {
   Future<void> modificar(Note Notamodificada) async {
-    final url = Uri.parse('http://192.168.0.101:3000/nota');
+    final url = Uri.parse('http://192.168.1.97:3000/nota');
     List<Map<String, dynamic>> cuerposMap =
         Notamodificada.cuerpo.map((c) => c.toMap()).toList();
 
@@ -167,7 +167,7 @@ class CreateNotaDto {
       {this.usuarioId = 'user1'});
 
   Future<void> crearNota() async {
-    final url = Uri.parse('http://192.168.0.101:3000/nota');
+    final url = Uri.parse('http://192.168.1.97:3000/nota');
     List<Map<String, dynamic>> cuerposMap =
         cuerpo.map((c) => c.toMap()).toList();
 
@@ -190,6 +190,8 @@ class CreateNotaDto {
         'cuerpo': cuerposMap,
         'fechaCreacion': DateTime.now().toString(),
         'fechaActualizacion': DateTime.now().toString(),
+        'latitud': latitud,
+        'altitud': altitud,
         'usuarioId': usuarioId,
       }),
       headers: {'Content-Type': 'application/json'},
