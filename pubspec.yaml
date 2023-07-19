@@ -23,7 +23,9 @@ dependencies:
   flutter_html: ^2.2.1 
   html: ^0.15.4
   html_unescape: ^2.0.0
-
+  geolocator: ^7.7.0
+  flutter_map: ^2.2.0
+  latlng: ^1.0.0
 
   
 
