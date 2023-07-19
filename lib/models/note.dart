@@ -11,6 +11,12 @@ abstract class Cuerpo {
   T obtenerDato<T>();
 }
 
+class Dtoforspeechandocr {
+  String titulo;
+  List<Cuerpo> cuerpo;
+  Dtoforspeechandocr(this.titulo, this.cuerpo);
+}
+
 class CuerpoTexto extends Cuerpo {
   @override
   String tipo;

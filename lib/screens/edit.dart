@@ -7,10 +7,12 @@ import 'package:note_app/screens/home.dart';
 import 'package:note_app/screens/speech.dart';
 import '../models/note.dart';
 import 'informationNote.dart';
+import 'ocr.dart';
 
 class EditScreen extends StatefulWidget {
   final Note? note;
-  const EditScreen({super.key, this.note});
+  final Dtoforspeechandocr? notasininstanciar;
+  const EditScreen({super.key, this.note, this.notasininstanciar});
 
   @override
   State<EditScreen> createState() => _EditScreenState();
@@ -26,6 +28,9 @@ class _EditScreenState extends State<EditScreen> {
   void initState() {
     if (widget.note != null) {
       _tittlecontroller = TextEditingController(text: widget.note!.titulo);
+    } else if (widget.notasininstanciar != null) {
+      _tittlecontroller =
+          TextEditingController(text: widget.notasininstanciar!.titulo);
     }
     super.initState();
   }
@@ -184,6 +189,10 @@ class _EditScreenState extends State<EditScreen> {
                         if (widget.note != null) {
                           _controller
                               .setText(widget.note!.cuerpo[0].obtenerDato());
+                        } else if (widget.notasininstanciar != null) {
+                          _controller.setText(widget
+                              .notasininstanciar!.cuerpo[0]
+                              .obtenerDato());
                         }
                       },
                     ),
@@ -247,15 +256,62 @@ class _EditScreenState extends State<EditScreen> {
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
                               Colors.grey.shade900)),
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/ocr");
+                      onPressed: () async {
+                        if (widget.note != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ocrScreen(
+                                      nota: widget.note,
+                                    )),
+                          );
+                        } else {
+                          List<Cuerpo> cuerponota = [];
+                          cuerponota.add(CuerpoTexto(
+                              tipo: 'Texto Plano',
+                              texto: await _controller.getText()));
+                          Dtoforspeechandocr notanoinstanciada =
+                              new Dtoforspeechandocr(
+                                  _tittlecontroller.text, cuerponota);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ocrScreen(
+                                      notasininstanciar: notanoinstanciada,
+                                    )),
+                          );
+                        }
                       },
                       child: Icon(Icons.camera_alt),
                     ),
 
                     ElevatedButton(
-                      onPressed: () {
-                        Navigator.pushNamed(context, "/speech");
+                      onPressed: () async {
+                        if (widget.note != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SpeechScreen(
+                                      nota: widget.note as Note,
+                                    )),
+                          );
+                        } else {
+                          List<Cuerpo> cuerponota = [];
+                          cuerponota.add(CuerpoTexto(
+                              tipo: 'Texto Plano',
+                              texto: await _controller.getText()));
+                          Dtoforspeechandocr notanoinstanciada =
+                              new Dtoforspeechandocr(
+                                  _tittlecontroller.text, cuerponota);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => SpeechScreen(
+                                      notasininstanciar: notanoinstanciada
+                                          as Dtoforspeechandocr,
+                                    )),
+                          );
+                        }
                       },
                       style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
