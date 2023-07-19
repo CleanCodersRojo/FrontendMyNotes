@@ -26,7 +26,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getdata() async {
-    final url = 'http://192.168.0.101:3000/nota/byUser/user1';
+    final url = 'http://192.168.1.97:3000/nota/byUser/user1';
     final response = await http.get(Uri.parse(url));
     List<Note> notas = [];
     if (response.statusCode == 200) {
@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void deleteNote(Note nota) async {
-    final url = 'http://192.168.0.101:3000/nota';
+    final url = 'http://192.168.1.97:3000/nota';
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({
       'id': nota.notaId,
