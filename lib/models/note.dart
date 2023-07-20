@@ -40,7 +40,7 @@ class CuerpoTexto extends Cuerpo {
 
 class ServicioModificarnota {
   Future<void> modificar(Note Notamodificada) async {
-    final url = Uri.parse('http://192.168.1.97:3000/nota');
+    final url = Uri.parse('http://192.168.0.103:3000/nota');
     List<Map<String, dynamic>> cuerposMap =
         Notamodificada.cuerpo.map((c) => c.toMap()).toList();
 
@@ -51,13 +51,11 @@ class ServicioModificarnota {
         'fechaActualizacion': DateTime.now().toString(),
         'titulo': Notamodificada.titulo,
         'cuerpo': cuerposMap,
-        'latitud': Notamodificada.latitud,
-        'altitud': Notamodificada.altitud,
         'usuarioId': Notamodificada.usuarioId,
       }),
       headers: {'Content-Type': 'application/json'},
     );
-    print(response.body);
+
     if (response.statusCode == 200) {
       print('Nota creada exitosamente');
     } else {
@@ -173,21 +171,9 @@ class CreateNotaDto {
       {this.usuarioId = 'user1'});
 
   Future<void> crearNota() async {
-    final url = Uri.parse('http://192.168.1.97:3000/nota');
+    final url = Uri.parse('http://192.168.0.103:3000/nota');
     List<Map<String, dynamic>> cuerposMap =
         cuerpo.map((c) => c.toMap()).toList();
-
-    String json1 = json.encode({
-      'titulo': titulo,
-      'cuerpo': cuerposMap,
-      'fechaCreacion': DateTime.now().toString(),
-      'fechaEliminacion': Optional<DateTime>().toJson(),
-      'fechaActualizacion': DateTime.now().toString(),
-      'latitud': latitud,
-      'altitud': altitud,
-      'usuarioId': usuarioId,
-    });
-    print(json1);
 
     final response = await http.post(
       url,
@@ -202,7 +188,7 @@ class CreateNotaDto {
       }),
       headers: {'Content-Type': 'application/json'},
     );
-    print(response.body);
+
     if (response.statusCode == 201) {
       print('Nota creada exitosamente');
     } else {

@@ -27,23 +27,39 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getdata() async {
-    if (this.flag) {
-      final url = 'http://192.168.1.97:3000/nota/byUser/user1';
+    if (barra.text.isEmpty) {
+      final url = 'http://192.168.0.103:3000/nota/user/user1';
       final response = await http.get(Uri.parse(url));
       List<Note> notas = [];
       if (response.statusCode == 200) {
-        List<dynamic> jsonList = jsonDecode(response.body)['value']['value'];
+        List<dynamic> jsonList = jsonDecode(response.body)['value'];
         notas = jsonList.map((notaMap) {
           return Note.fromMap(notaMap);
         }).toList();
       }
       filteredNotes = notas;
     } else {
-      if (barra.text.isNotEmpty) {
-        onSearchTextChanged(barra.text);
-      } else {
-        onSearchTextChanged2();
+      final url = 'http://192.168.0.103:3000/nota/user/user1';
+      final response = await http.get(Uri.parse(url));
+      List<Note> notas = [];
+      if (response.statusCode == 200) {
+        List<dynamic> jsonList = jsonDecode(response.body)['value'];
+        notas = jsonList.map((notaMap) {
+          return Note.fromMap(notaMap);
+        }).toList();
       }
+      filteredNotes = notas;
+      List<Note> aux = [];
+      filteredNotes.forEach((element) {
+        if (element.titulo.toLowerCase().contains(barra.text.toLowerCase()) ||
+            element
+                .getresumen()
+                .toLowerCase()
+                .contains(barra.text.toLowerCase())) {
+          aux.add(element);
+        }
+      });
+      filteredNotes = aux;
     }
   }
 
@@ -52,26 +68,13 @@ class _HomeScreenState extends State<HomeScreen> {
     super.initState();
   }
 
-  List<Note> sortNotesByModifiedTime(List<Note> notes) {
-    if (sorted) {
-      notes
-          .sort((a, b) => a.fechaActualizacion.compareTo(b.fechaActualizacion));
-    } else {
-      notes
-          .sort((b, a) => a.fechaActualizacion.compareTo(b.fechaActualizacion));
-    }
-    sorted = !sorted;
-
-    return notes;
-  }
-
   getRandomColor() {
     Random random = Random();
     return backgroundColors[random.nextInt(backgroundColors.length)];
   }
 
-  void deleteNote(Note nota) async {
-    final url = 'http://192.168.1.97:3000/nota';
+  Future<void> deleteNote(Note nota) async {
+    final url = 'http://192.168.0.103:3000/nota';
     final headers = {'Content-Type': 'application/json'};
     final body = jsonEncode({
       'id': nota.notaId,
@@ -92,27 +95,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void onSearchTextChanged(String search) {
-    setState(() {
-      this.flag = false;
-      List<Note> aux = [];
-      filteredNotes.forEach((element) {
-        if (element.titulo.toLowerCase().contains(search.toLowerCase()) ||
-            element.getresumen().toLowerCase().contains(search.toLowerCase())) {
-          aux.add(element);
-        }
-      });
-      filteredNotes = aux;
-    });
-  }
-
-  void onSearchTextChanged2() {
-    setState(() {
-      this.flag = true;
-      getdata();
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -128,9 +110,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     style: TextStyle(fontSize: 30, color: Colors.white)),
                 IconButton(
                     onPressed: () {
-                      setState(() {
-                        filteredNotes = sortNotesByModifiedTime(filteredNotes);
-                      });
+                      setState(() {});
                     },
                     padding: EdgeInsets.all(0),
                     icon: Container(
@@ -140,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: Colors.grey.shade800.withOpacity(0.8),
                           borderRadius: BorderRadius.circular(10)),
                       child: const Icon(
-                        Icons.sort,
+                        Icons.refresh,
                         color: Colors.white,
                       ),
                     ))
@@ -151,7 +131,10 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             TextField(
               controller: barra,
-              onChanged: onSearchTextChanged,
+              onChanged: (value) {
+                getdata();
+                setState(() {});
+              },
               style: TextStyle(fontSize: 16, color: Colors.white),
               decoration: InputDecoration(
                   contentPadding: EdgeInsets.symmetric(vertical: 12),
@@ -201,8 +184,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                     alignment: Alignment.centerLeft,
                                     child: Icon(Icons.delete,
                                         color: Colors.black))),
-                            onDismissed: (direction) {
-                              deleteNote(filteredNotes[index]);
+                            onDismissed: (direction) async {
+                              await deleteNote(filteredNotes[index]);
                             },
                             child: Card(
                               margin: EdgeInsets.only(bottom: 20),
@@ -214,7 +197,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 padding: const EdgeInsets.all(10.0),
                                 child: ListTile(
                                   onTap: () async {
-                                    final result = await Navigator.push(
+                                    await Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                         builder: (BuildContext context) =>
@@ -222,26 +205,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 note: filteredNotes[index]),
                                       ),
                                     );
-                                    /*
-                        if (result != null) {
-                          setState(() {
-                            int original_index =
-                                sampleNotes.indexOf(filteredNotes[index]);
-
-                            sampleNotes[original_index] = Note(
-                                id: sampleNotes[original_index].id,
-                                title: result[0],
-                                content: result[1],
-                                modifiedTime: DateTime.now());
-
-                            filteredNotes[index] = Note(
-                                id: filteredNotes[index].id,
-                                title: result[0],
-                                content: result[1],
-                                modifiedTime: DateTime.now());
-                          });
-                        }
-                        */
                                   },
                                   title: RichText(
                                     maxLines: 3,

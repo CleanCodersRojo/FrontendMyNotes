@@ -65,19 +65,20 @@ class _EditScreenState extends State<EditScreen> {
                         color: Colors.white,
                       ),
                     )),
-                    
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
                         onPressed: () async {
                           if (widget.note != null) {
-                            ServicioModificarnota service = new ServicioModificarnota();
+                            ServicioModificarnota service =
+                                new ServicioModificarnota();
                             List<Cuerpo> cuerponota = [];
                             cuerponota.add(CuerpoTexto(
                                 tipo: 'Texto Plano',
                                 texto: await _controller.getText()));
                             widget.note!.cuerpo = cuerponota;
+                            widget.note!.titulo = _tittlecontroller.text;
                             service.modificar(widget.note!);
                           } else {
                             List<Cuerpo> cuerponota = [];
@@ -85,9 +86,11 @@ class _EditScreenState extends State<EditScreen> {
                                 tipo: 'Texto Plano',
                                 texto: await _controller.getText()));
 
-                                final position = await Geolocator.getCurrentPosition(//obtener la ubicacion
-                                    desiredAccuracy: LocationAccuracy.high,
-                                );
+                            final position =
+                                await Geolocator.getCurrentPosition(
+                              //obtener la ubicacion
+                              desiredAccuracy: LocationAccuracy.high,
+                            );
                             CreateNotaDto newnota = CreateNotaDto(
                                 _tittlecontroller.text,
                                 cuerponota,
@@ -96,10 +99,10 @@ class _EditScreenState extends State<EditScreen> {
                             newnota.crearNota();
                           }
 
-              
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => HomeScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => HomeScreen()),
                           );
                         },
                         padding: EdgeInsets.all(0),
@@ -114,48 +117,44 @@ class _EditScreenState extends State<EditScreen> {
                             color: Colors.green,
                             size: 30,
                           ),
-                        )
-                      ),
-                  
+                        )),
                     IconButton(
-
-                    onPressed: () async {
-                      if(widget.note != null){
-                        Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => InformationScreen(nota: widget.note,)),
-                      );
-                      }else{
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                            content: Text('La información de la nota todavía no se puede visualizar.'),
-                            duration: Duration(seconds: 3),
-                            ),
-                        );
-                      }
-                      
-                      
-                    
-                    },
-                    padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
-                    icon: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                          color: Colors.grey.shade800.withOpacity(0.8),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: const Icon(
-                        Icons.more_vert,
-                        color: Colors.white,
-                        size: 30,
-                      ),
-                    ))
+                        onPressed: () async {
+                          if (widget.note != null) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => InformationScreen(
+                                        nota: widget.note,
+                                      )),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                    'La información de la nota todavía no se puede visualizar.'),
+                                duration: Duration(seconds: 3),
+                              ),
+                            );
+                          }
+                        },
+                        padding: EdgeInsets.fromLTRB(0, 0, 10, 0),
+                        icon: Container(
+                          width: 40,
+                          height: 40,
+                          decoration: BoxDecoration(
+                              color: Colors.grey.shade800.withOpacity(0.8),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: const Icon(
+                            Icons.more_vert,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ))
                   ],
                 ),
               ],
             ),
-
-
             Expanded(
               child: ListView(
                 children: [
@@ -198,8 +197,7 @@ class _EditScreenState extends State<EditScreen> {
                     ),
                     controller: _controller,
                     htmlEditorOptions: HtmlEditorOptions(
-                       darkMode: true,
-                      
+                      darkMode: true,
                       hint: "Escribe algo...",
                       initialText: "",
                     ),
