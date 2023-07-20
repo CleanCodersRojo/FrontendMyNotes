@@ -196,7 +196,9 @@ class CreateNotaDto {
         'cuerpo': cuerposMap,
         'fechaCreacion': DateTime.now().toString(),
         'fechaActualizacion': DateTime.now().toString(),
+        if(latitud.hasValue())
         'latitud': latitud.getValue(),
+        if(altitud.hasValue())
         'altitud': altitud.getValue(),
         'usuarioId': usuarioId,
       }),

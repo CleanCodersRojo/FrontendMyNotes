@@ -20,7 +20,7 @@ class EditScreen extends StatefulWidget {
 
 class _EditScreenState extends State<EditScreen> {
   HtmlEditorController _controller = HtmlEditorController();
-
+  var position;
   TextEditingController _tittlecontroller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
@@ -84,16 +84,24 @@ class _EditScreenState extends State<EditScreen> {
                             cuerponota.add(CuerpoTexto(
                                 tipo: 'Texto Plano',
                                 texto: await _controller.getText()));
-
-                                final position = await Geolocator.getCurrentPosition(//obtener la ubicacion
+                                
+                              try{
+                                  position = await Geolocator.getCurrentPosition(//obtener la ubicacion
                                     desiredAccuracy: LocationAccuracy.high,
                                 );
-                            CreateNotaDto newnota = CreateNotaDto(
-                                _tittlecontroller.text,
-                                cuerponota,
-                                Optional<double>(position.latitude),
-                                Optional<double>(position.longitude));
-                            newnota.crearNota();
+                              }catch(e){
+                                print(e);
+                              }
+                                
+                              
+                               
+                              
+                                 CreateNotaDto newnota = CreateNotaDto(
+                                    _tittlecontroller.text,
+                                    cuerponota,
+                                    Optional<double>(position?.latitude??null),
+                                    Optional<double>(position?.longitude??null));
+                                  newnota.crearNota();
                           }
 
               
@@ -129,7 +137,6 @@ class _EditScreenState extends State<EditScreen> {
                         ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                             content: Text('La información de la nota todavía no se puede visualizar.'),
-                            duration: Duration(seconds: 3),
                             ),
                         );
                       }
