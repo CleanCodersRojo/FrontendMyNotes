@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:note_app/repository/note_repository_remote.dart';
+import '../constants/status.dart';
 import '../models/note.dart';
 import 'edit.dart';
 import 'geolocator.dart';
@@ -104,7 +106,9 @@ class InformationScreen extends StatelessWidget{
                   FloatingActionButton(
                     
                     onPressed: () async {
-                      if(nota!.altitud != null && nota!.latitud != null){
+                      final comprobarConexion = await NoteRepositoryRemote().comprobarConexion();
+
+                      if(nota!.altitud != null && nota!.latitud != null && comprobarConexion != Status.internetError){
                         Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) => LocationMapView(nota: nota)),

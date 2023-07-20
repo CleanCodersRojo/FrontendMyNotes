@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:note_app/constants/colors.dart';
 import 'package:note_app/models/note.dart';
 import 'package:note_app/screens/edit.dart';
+import 'package:note_app/services/note_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -19,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   TextEditingController barra = new TextEditingController();
   bool sorted = false;
   bool flag = true;
+  NoteService noteService = NoteService();
 
   DateTime tramsformarfecha(String fecha) {
     DateFormat formato = DateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -27,28 +29,43 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> getdata() async {
-    if (barra.text.isEmpty) {
-      final url = 'http://192.168.0.103:3000/nota/user/user1';
-      final response = await http.get(Uri.parse(url));
-      List<Note> notas = [];
-      if (response.statusCode == 200) {
-        List<dynamic> jsonList = jsonDecode(response.body)['value'];
-        notas = jsonList.map((notaMap) {
-          return Note.fromMap(notaMap);
-        }).toList();
-      }
-      filteredNotes = notas;
-    } else {
-      final url = 'http://192.168.0.103:3000/nota/user/user1';
-      final response = await http.get(Uri.parse(url));
-      List<Note> notas = [];
-      if (response.statusCode == 200) {
-        List<dynamic> jsonList = jsonDecode(response.body)['value'];
-        notas = jsonList.map((notaMap) {
-          return Note.fromMap(notaMap);
-        }).toList();
-      }
-      filteredNotes = notas;
+    //if (barra.text.isEmpty) {
+    //  final url = 'http://192.168.1.97:3000/nota/user/user1';
+    //  final response = await http.get(Uri.parse(url));
+    //  List<Note> notas = [];
+    //  if (response.statusCode == 200) {
+    //    List<dynamic> jsonList = jsonDecode(response.body)['value'];
+    //    notas = jsonList.map((notaMap) {
+    //      return Note.fromMap(notaMap);
+    //    }).toList();
+    //  }
+    //  filteredNotes = notas;
+    //} else {
+    //  final url = 'http://192.168.1.97:3000/nota/user/user1';
+    //  final response = await http.get(Uri.parse(url));
+    //  List<Note> notas = [];
+    //  if (response.statusCode == 200) {
+    //    List<dynamic> jsonList = jsonDecode(response.body)['value'];
+    //    notas = jsonList.map((notaMap) {
+    //      return Note.fromMap(notaMap);
+    //    }).toList();
+    //  }
+    //  filteredNotes = notas;
+    //  List<Note> aux = [];
+    //  filteredNotes.forEach((element) {
+    //    if (element.titulo.toLowerCase().contains(barra.text.toLowerCase()) ||
+    //        element
+    //            .getresumen()
+    //            .toLowerCase()
+    //            .contains(barra.text.toLowerCase())) {
+    //      aux.add(element);
+    //    }
+    //  });
+    //  filteredNotes = aux;
+    //}
+    filteredNotes = await noteService.obtenerTodas();
+
+    if (barra.text.isNotEmpty) {
       List<Note> aux = [];
       filteredNotes.forEach((element) {
         if (element.titulo.toLowerCase().contains(barra.text.toLowerCase()) ||
@@ -74,25 +91,28 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> deleteNote(Note nota) async {
-    final url = 'http://192.168.0.103:3000/nota';
-    final headers = {'Content-Type': 'application/json'};
-    final body = jsonEncode({
-      'id': nota.notaId,
-      'fechaEliminacion': DateTime.now().toString(),
-      'usuarioId': nota.usuarioId
-    });
+    //final url = 'http://192.168.1.97:3000/nota';
+    //final headers = {'Content-Type': 'application/json'};
+    //final body = jsonEncode({
+    //  'id': nota.notaId,
+    //  'fechaEliminacion': DateTime.now().toString(),
+    //  'usuarioId': nota.usuarioId
+    //});
+    //
+    //final response =
+    //    await http.delete(Uri.parse(url), headers: headers, body: body);
+    //
+    //if (response.statusCode == 200) {
+    //  print('La nota fue eliminada');
+    //} else {
+    //  print('Error al eliminar la nota: ${response.statusCode}');
+    //}
+    await noteService.eliminar(nota);
 
-    final response =
-        await http.delete(Uri.parse(url), headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-      print('La nota fue eliminada');
-    } else {
-      print('Error al eliminar la nota: ${response.statusCode}');
-    }
     setState(() {
       filteredNotes.remove(nota);
     });
+
   }
 
   @override

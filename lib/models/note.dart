@@ -40,7 +40,7 @@ class CuerpoTexto extends Cuerpo {
 
 class ServicioModificarnota {
   Future<void> modificar(Note Notamodificada) async {
-    final url = Uri.parse('http://192.168.0.103:3000/nota');
+    final url = Uri.parse('http://192.168.1.97:3000/nota');
     List<Map<String, dynamic>> cuerposMap =
         Notamodificada.cuerpo.map((c) => c.toMap()).toList();
 
@@ -71,8 +71,8 @@ class Note {
   DateTime fechaCreacion;
   DateTime? fechaEliminacion;
   DateTime fechaActualizacion;
-  num? latitud;
-  num? altitud;
+  double? latitud;
+  double? altitud;
   String usuarioId;
 
   Note({
@@ -114,18 +114,39 @@ class Note {
       titulo: json['titulo'],
       cuerpo: cuerpo,
       fechaCreacion: DateTime.parse(json['fechaCreacion']),
-      fechaEliminacion: json['fechaEliminacion']['value'] == null
+      fechaEliminacion: (json['fechaEliminacion']['value'] == null ||
+              json['fechaEliminacion']['value'] == 'null')
           ? null
           : DateTime.parse(json['fechaEliminacion']['value']),
       fechaActualizacion: DateTime.parse(json['fechaActualizacion']),
       latitud: json['latitud']['value'] == null
           ? null
-          : num.parse(json['latitud']['value'].toString()),
+          : double.parse(json['latitud']['value'].toString()),
       altitud: json['altitud']['value'] == null
           ? null
-          : num.parse(json['altitud']['value'].toString()),
+          : double.parse(json['altitud']['value'].toString()),
       usuarioId: json['usuarioId'],
     );
+  }
+
+
+  Map<String, dynamic> toMap() {
+    List<Map<String, dynamic>> cuerposMap =
+        cuerpo.map((c) => c.toMap()).toList();
+    return {
+      'notaId': notaId,
+      'titulo': titulo,
+      'cuerpo': cuerposMap,
+      'fechaCreacion': fechaCreacion.toString(),
+      'fechaEliminacion': {
+        'value': fechaEliminacion.toString(),
+        'assign': fechaEliminacion != null
+      },
+      'fechaActualizacion': fechaActualizacion.toString(),
+      'latitud': {'value': latitud, 'assign': latitud != null},
+      'altitud': {'value': altitud, 'assign': altitud != null},
+      'usuarioId': usuarioId,
+    };
   }
 }
 
@@ -171,7 +192,7 @@ class CreateNotaDto {
       {this.usuarioId = 'user1'});
 
   Future<void> crearNota() async {
-    final url = Uri.parse('http://192.168.0.103:3000/nota');
+    final url = Uri.parse('http://192.168.1.97:3000/nota');
     List<Map<String, dynamic>> cuerposMap =
         cuerpo.map((c) => c.toMap()).toList();
 
