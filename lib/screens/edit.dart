@@ -65,19 +65,20 @@ class _EditScreenState extends State<EditScreen> {
                         color: Colors.white,
                       ),
                     )),
-                    
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     IconButton(
                         onPressed: () async {
                           if (widget.note != null) {
-                            ServicioModificarnota service = new ServicioModificarnota();
+                            ServicioModificarnota service =
+                                new ServicioModificarnota();
                             List<Cuerpo> cuerponota = [];
                             cuerponota.add(CuerpoTexto(
                                 tipo: 'Texto Plano',
                                 texto: await _controller.getText()));
                             widget.note!.cuerpo = cuerponota;
+                            widget.note!.titulo = _tittlecontroller.text;
                             service.modificar(widget.note!);
                           } else {
                             List<Cuerpo> cuerponota = [];
@@ -104,10 +105,10 @@ class _EditScreenState extends State<EditScreen> {
                                   newnota.crearNota();
                           }
 
-              
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => HomeScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => HomeScreen()),
                           );
                         },
                         padding: EdgeInsets.all(0),
@@ -122,9 +123,7 @@ class _EditScreenState extends State<EditScreen> {
                             color: Colors.green,
                             size: 30,
                           ),
-                        )
-                      ),
-                  
+                        )),
                     IconButton(
 
                     onPressed: () async {
@@ -161,8 +160,6 @@ class _EditScreenState extends State<EditScreen> {
                 ),
               ],
             ),
-
-
             Expanded(
               child: ListView(
                 children: [
@@ -205,8 +202,7 @@ class _EditScreenState extends State<EditScreen> {
                     ),
                     controller: _controller,
                     htmlEditorOptions: HtmlEditorOptions(
-                       darkMode: true,
-                      
+                      darkMode: true,
                       hint: "Escribe algo...",
                       initialText: "",
                     ),
