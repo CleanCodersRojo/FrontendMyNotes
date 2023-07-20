@@ -40,6 +40,9 @@ class _SpeechScreenState extends State<SpeechScreen> {
         showTwoGlows: true,
         child: GestureDetector(
           onTapDown: (details) async {
+            try{
+
+            
             if (!isListening) {
               var available = await speechToText.initialize();
               if (available) {
@@ -53,6 +56,9 @@ class _SpeechScreenState extends State<SpeechScreen> {
                   });
                 });
               }
+            }
+            }catch(e){
+              print(e);
             }
           },
           onTapUp: (details) {
