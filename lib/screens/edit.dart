@@ -5,6 +5,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:note_app/screens/home.dart';
 import 'package:note_app/screens/speech.dart';
+import 'package:note_app/services/note_service.dart';
 import '../models/note.dart';
 import 'informationNote.dart';
 import 'ocr.dart';
@@ -23,7 +24,7 @@ class _EditScreenState extends State<EditScreen> {
   var position;
   TextEditingController _tittlecontroller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-
+  final NoteService noteService =  NoteService();
   @override
   void initState() {
     if (widget.note != null) {
@@ -71,15 +72,16 @@ class _EditScreenState extends State<EditScreen> {
                     IconButton(
                         onPressed: () async {
                           if (widget.note != null) {
-                            ServicioModificarnota service =
-                                new ServicioModificarnota();
+                            //ServicioModificarnota service =
+                            //    new ServicioModificarnota();
                             List<Cuerpo> cuerponota = [];
                             cuerponota.add(CuerpoTexto(
                                 tipo: 'Texto Plano',
                                 texto: await _controller.getText()));
                             widget.note!.cuerpo = cuerponota;
                             widget.note!.titulo = _tittlecontroller.text;
-                            service.modificar(widget.note!);
+                            //service.modificar(widget.note!);
+                            noteService.modificar(widget.note!);
                           } else {
                             List<Cuerpo> cuerponota = [];
                             cuerponota.add(CuerpoTexto(
@@ -92,17 +94,14 @@ class _EditScreenState extends State<EditScreen> {
                                 );
                               }catch(e){
                                 print(e);
-                              }
-                                
-                              
-                               
-                              
-                                 CreateNotaDto newnota = CreateNotaDto(
-                                    _tittlecontroller.text,
-                                    cuerponota,
-                                    Optional<double>(position?.latitude??null),
-                                    Optional<double>(position?.longitude??null));
-                                  newnota.crearNota();
+                              }                              
+                              CreateNotaDto newnota = CreateNotaDto(
+                                _tittlecontroller.text,
+                                cuerponota,
+                                Optional<double>(position.latitude),
+                                Optional<double>(position.longitude));
+                              //newnota.crearNota();
+                              noteService.crear(newnota);
                           }
 
                           Navigator.push(
