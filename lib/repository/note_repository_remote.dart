@@ -5,16 +5,16 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class NoteRepositoryRemote extends NoteRepository {
-  final url = 'http://192.168.1.192:3000';
+  final url = 'http://192.168.1.97:3000';
 
   @override
   Future<List<Note>> obtenerTodas() async {
     try {
-      final response = await http.get(Uri.parse('$url/nota/byUser/user1'));
+      final response = await http.get(Uri.parse('$url/nota/user/user1'));
       List<Note> notas = [];
       if (response.statusCode == 200) {
         print(jsonDecode(response.body));
-        List<dynamic> jsonList = jsonDecode(response.body)['value']['value'];
+        List<dynamic> jsonList = jsonDecode(response.body)['value'];
         notas = jsonList.map((notaMap) {
           return Note.fromMap(notaMap);
         }).toList();
@@ -62,7 +62,7 @@ class NoteRepositoryRemote extends NoteRepository {
         'fechaCreacion': DateTime.now().toString(),
         'fechaActualizacion': DateTime.now().toString(),
         'latitud': nota.latitud.hasValue() ? nota.latitud.getValue() : null,
-        'altitud':  nota.altitud.hasValue() ? nota.altitud.getValue() : null,
+        'altitud': nota.altitud.hasValue() ? nota.altitud.getValue() : null,
         'usuarioId': nota.usuarioId,
       });
       final response =
@@ -91,10 +91,9 @@ class NoteRepositoryRemote extends NoteRepository {
         'fechaActualizacion': DateTime.now().toString(),
         'titulo': nota.titulo,
         'cuerpo': cuerposMap,
-        'latitud': nota.latitud,
-        'altitud': nota.altitud,
         'usuarioId': nota.usuarioId,
       });
+      print(body);
       final response = await http.patch(Uri.parse('$url/nota'),
           headers: headers, body: body);
       if (response.statusCode == 200) {
@@ -112,7 +111,7 @@ class NoteRepositoryRemote extends NoteRepository {
 
   Future<Status> comprobarConexion() async {
     try {
-      final response = await http.get(Uri.parse('$url/nota/byUser/user1'));
+      final response = await http.get(Uri.parse('$url/nota/user/user1'));
       if (response.statusCode == 200) {
         return Status.ok;
       } else {
